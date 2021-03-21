@@ -6,6 +6,10 @@
 #include "GameFramework/Actor.h"
 #include "MyAsteroid.generated.h"
 
+class UProjectileMovementComponent;
+class USphereComponent;
+class APlayerPawn;
+
 UCLASS()
 class ASTEROIDS_API AMyAsteroid : public AActor
 {
@@ -14,15 +18,33 @@ class ASTEROIDS_API AMyAsteroid : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AMyAsteroid();
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Meshes")
+		UStaticMeshComponent* ProjectileMesh;
 
-protected:
+	/** Projectile movement component */
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement)
+		UProjectileMovementComponent* ProjectileMovement;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Support")
+		AActor* HitActor;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Support")
+		APlayerPawn* Enemy;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Support")
+		int32 Health;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Meshes")
+		USphereComponent* MainCollision;
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
+	//support
+	void Double();
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	AMyAsteroid* Twin;
+	UWorld* World;
 
-	
+	UFUNCTION()
+		void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+		void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	
 };

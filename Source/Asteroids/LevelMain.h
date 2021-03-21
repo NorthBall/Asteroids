@@ -6,15 +6,21 @@
 #include "Engine/LevelScriptActor.h"
 #include "LevelMain.generated.h"
 
+class APlayerPawn;
 /**
  * 
  */
+
 UCLASS()
 class ASTEROIDS_API ALevelMain : public ALevelScriptActor
 {
 	GENERATED_BODY()
-	
-	
-	
+public:
+	ALevelMain();
+	virtual void BeginPlay() override;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Support")
+		APlayerPawn* MainPlayer;
+	UFUNCTION(BlueprintImplementableEvent)
+		void AfterBeginPlay();
 	
 };

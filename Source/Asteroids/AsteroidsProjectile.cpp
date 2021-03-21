@@ -17,7 +17,7 @@ AAsteroidsProjectile::AAsteroidsProjectile()
 	ProjectileMesh->SetupAttachment(RootComponent);
 	ProjectileMesh->BodyInstance.SetCollisionProfileName("Projectile");
 	//ProjectileMesh->BodyInstance.
-	//UE_LOG(LogTemp, Warning, TEXT("Why"));
+	UE_LOG(LogTemp, Warning, TEXT("%d Why"), (3>2)?4:5);
 	ProjectileMesh->BodyInstance.SetResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
 	ProjectileMesh->OnComponentHit.AddDynamic(this, &AAsteroidsProjectile::OnHit);		// set up a notification for when this component hits something
 	RootComponent = ProjectileMesh;
