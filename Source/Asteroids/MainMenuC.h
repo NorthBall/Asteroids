@@ -16,8 +16,6 @@ class ASTEROIDS_API UMainMenuC : public UUserWidget
 	GENERATED_BODY()
 public:
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables")
-		TArray<int32> AllHS;
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables")
 		int32 HSLineNumber;
 		UFUNCTION(BlueprintCallable)
 			void Reload();

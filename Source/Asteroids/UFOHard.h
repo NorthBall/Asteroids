@@ -9,6 +9,7 @@
 class UStaticMeshComponent;
 class UParticleSystemComponent;
 class APlayerPawn;
+class AAIController;
 
 
 UCLASS()
@@ -41,5 +42,6 @@ public:
 		void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 		void OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	
+	//some support variable
+	AAIController* TrueController;//Controller of Pawn with right class
 };

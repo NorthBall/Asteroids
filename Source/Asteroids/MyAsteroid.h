@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "MyAsteroid.generated.h"
 
 class UProjectileMovementComponent;
@@ -18,7 +19,7 @@ class ASTEROIDS_API AMyAsteroid : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AMyAsteroid();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
 		UStaticMeshComponent* ProjectileMesh;
 
 	/** Projectile movement component */
@@ -30,14 +31,14 @@ public:
 		APlayerPawn* Enemy;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Support")
 		int32 Health;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
 		USphereComponent* MainCollision;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
 	//support
-	void Double();
+	void Double(int32 TimesToRepeat);
 
 	AMyAsteroid* Twin;
 	UWorld* World;

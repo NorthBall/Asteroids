@@ -9,7 +9,7 @@
 
 class APlayerPawn;
 class UMainMenuC;
-class UCanvasPanel;
+class UVerticalBox;
 class UButton;
 class UTextBlock;
 /**
@@ -21,39 +21,42 @@ class ASTEROIDS_API UMyHUD : public UUserWidget
 	GENERATED_BODY()
 public:
 	UMyHUD(const FObjectInitializer& Obj);
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reference")
-		APlayerPawn* ModelRef;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reference")
-		UMainMenuC* MenuRef;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables")
-		int32 SavedScore=0;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables")
-		int32 HSLineNumber;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
+	//init values
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Init")
+		UButton* ResumeB;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Init")
+		UTextBlock* EndGameW;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Init")
 		TSubclassOf<class UMainMenuC> MenuClass;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Init")
+		UTextBlock* Health;
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Init")
+		UVerticalBox* QuickMenu;
 	UFUNCTION()
 		void EndGame();
 	//buttons
 	UFUNCTION(BlueprintCallable)
 		void Resume();
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable,BlueprintPure)
 		FText ChangeHealth();
 	UFUNCTION(BlueprintCallable)
 		void ToMainMenu();
 	UFUNCTION(BlueprintCallable)
 		void Quit();
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable,BlueprintPure)
 		FText YourScore();
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable,BlueprintPure)
 		FText HighScore();
-	UCanvasPanel* QuickMenu;
+	
 	//buttons ref
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Buttons")
-		UButton* ResumeB;
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Buttons")
-		UTextBlock* Health;
-	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Buttons")
-		UTextBlock* EndGameW;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reference")
+		APlayerPawn* ModelRef;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reference")
+		UMainMenuC* MenuRef;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables")
+		int32 SavedScore = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Variables")
+		int32 HSLineNumber;
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite, Category = "Colors")
 		TArray<FSlateColor> ColorsHealth;
 };

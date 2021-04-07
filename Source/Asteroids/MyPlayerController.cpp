@@ -8,7 +8,7 @@
 #include "EngineUtils.h"
 #include "CursorWidget.h"
 #include "MyHUD.h"
-#include "Components/CanvasPanel.h"
+#include "Components/VerticalBox.h"
 AMyPlayerController::AMyPlayerController()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -31,7 +31,7 @@ void AMyPlayerController::BeginPlay()
 	if(Level != NULL)
 	{
 		
-		TActorIterator<ACameraActor> Iter(Level);
+		/*TActorIterator<ACameraActor> Iter(Level);
 		if (Iter)
 		{
 			MainCamera = *Iter;
@@ -43,7 +43,7 @@ void AMyPlayerController::BeginPlay()
 		MainCamera->GetCameraComponent()->SetProjectionMode(ECameraProjectionMode::Orthographic);
 		MainCamera->GetCameraComponent()->SetOrthoWidth(4800.f);
 		MainCamera->GetCameraComponent()->SetAspectRatio(16.f / 9.f);
-		SetViewTarget(MainCamera);
+		SetViewTarget(MainCamera);*/
 		if (PlayerCursorClass)
 		{
 			PlayerCursor = CreateWidget<UCursorWidget>(this, PlayerCursorClass);
@@ -62,6 +62,7 @@ void AMyPlayerController::BeginPlay()
 			PlayerModel->PlayerCursor = PlayerCursor;
 			HUD->ModelRef = PlayerModel;
 		}
+		bShowMouseCursor = true;
 	}
 
 }
@@ -79,7 +80,7 @@ void AMyPlayerController::SetupInputComponent()
 	InputComponent->BindAction("Pause", IE_Pressed, this, &AMyPlayerController::PauseGame);
 	InputComponent->BindAction("RightClick", IE_Pressed, this, &AMyPlayerController::StartBeaming);
 	InputComponent->BindAxis("MoveRight", this, &AMyPlayerController::AxisY);
-	InputComponent->BindAxis("MoveUp", this, &AMyPlayerController::AxisX);
+	InputComponent->BindAxis("MoveForward", this, &AMyPlayerController::AxisX);
 }
 void AMyPlayerController::StartShooting()
 {
@@ -97,12 +98,13 @@ void AMyPlayerController::PauseGame()
 {
 	SetPause(true);
 	if (HUD != NULL) if (HUD->QuickMenu != NULL) HUD->QuickMenu->SetVisibility(ESlateVisibility::Visible);
-	if (!CasualCursor->IsValidLowLevelFast()&&CasualCursorClass) CasualCursor = CreateWidget<UUserWidget>(this, CasualCursorClass);
+	if (!CasualCursor->IsValidLowLevelFast() && CasualCursorClass)
+	{
+		CasualCursor = CreateWidget<UUserWidget>(this, CasualCursorClass);
+	}
+	SetMouseCursorWidget(EMouseCursor::Default, CasualCursor);
 }
 AMyPlayerController::~AMyPlayerController()
 {
-	if (IsValid(MainCamera))
-	{
-		MainCamera->Destroy();
-	}
+	if (MainCamera->IsValidLowLevel()) MainCamera->Destroy();
 }

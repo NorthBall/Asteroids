@@ -12,7 +12,6 @@
 AUFOLight::AUFOLight()
 {
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
-	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AUFOLight::OnBeginOverlap);
 	//BonesName.Add(TEXT("Bone1")); BonesName.Add(TEXT("Bone2")); BonesName.Add(TEXT("Bone3")); BonesName.Add(TEXT("Bone4")); BonesName.Add(TEXT("Bone5")); BonesName.Add(TEXT("Bone6"));
 }
 
@@ -21,6 +20,7 @@ void AUFOLight::BeginPlay()
 {
 	Super::BeginPlay();
 	Level = GetWorld();
+	//GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AUFOLight::OnBeginOverlap);
 }
 
 float AUFOLight::TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)

@@ -30,13 +30,15 @@ APlayerPawn::APlayerPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	CurrentCharges = MaxCharges;
+	reChargeTime = MaxChargeTime;
+	TimeToBeam = MaxBeamTime;
+	SpeedVect = FVector(0);
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh0"));
 	Beam = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Beam0"));
 	MainTheme = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioLong"));
 	if (MainTheme->IsValidLowLevelFast())
 	{
 		MainTheme->bAutoActivate = false;
-		//MainTheme->OnAudioFinished.AddDynamic(this, &APlayerPawn::ReplaySound);
 	}
 	FailSound = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioFail"));
 	if (FailSound->IsValidLowLevelFast())
@@ -53,7 +55,10 @@ APlayerPawn::APlayerPawn()
 	//ProjectileMesh->OnComponentHit.AddDynamic(this, &AMyAsteroid::OnHit);		// set up a notification for when this component hits something
 	RootComponent = MainCollision;
 	Body->SetupAttachment(RootComponent);
+	Beam->SetupAttachment(Body);
+	Beam->SetVisibility(false);
 	BeamEnemies={ AUFOHard::StaticClass(),AMyAsteroid::StaticClass(),AUFOLight::StaticClass() };
+	SweepHit = &TempHit;//Very important, ue4 pointers wouldnt work without right part
 }
 
 // Called when the game starts or when spawned
@@ -61,7 +66,12 @@ void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	Beam->Deactivate();
-	if (MainTheme != NULL) MainTheme->Play();
+	Beam->SetVisibility(true);
+	if (MainTheme != NULL)
+	{
+		MainTheme->Play();
+		//MainTheme->OnAudioFinished.AddDynamic(this, &APlayerPawn::ReplaySound);
+	}
 }
 
 // Called every frame
@@ -78,15 +88,17 @@ void APlayerPawn::Tick(float DeltaTime)
 		if (DeltaSpeed.Size() > 0)
 		{
 			DeltaSpeed.GetClampedToMaxSize(1.f);
-			SpeedVect = (SpeedVect + GetActorRotation().RotateVector(DeltaSpeed*Acceleration)).GetClampedToMaxSize(MaxSpeed);
+			SpeedVect = (SpeedVect + GetActorRotation().RotateVector(DeltaSpeed*Acceleration*DeltaTime)).GetClampedToMaxSize(MaxSpeed);
 			FireShot();
 		}
 	}
 	AddActorWorldOffset(SpeedVect*DeltaTime,true,SweepHit);
-	 if (SweepHit!=NULL) if (SweepHit->bBlockingHit)
+	//DebugHelper(SpeedVect * DeltaTime);
+	if (SweepHit!=NULL) 
+		 if (SweepHit->bBlockingHit)
 	{
 		SpeedVect=FVector::VectorPlaneProject(SpeedVect, SweepHit->Normal.GetSafeNormal2D());
-		AddActorWorldOffset(SpeedVect*(1.f - SweepHit->Time));
+		AddActorWorldOffset(SpeedVect*(1.f - SweepHit->Time)*DeltaTime,true,SweepHit);
 	}
 	if (MaxCharges != CurrentCharges)
 	{
@@ -103,7 +115,7 @@ void APlayerPawn::Tick(float DeltaTime)
 
 float APlayerPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
 {
-	bCanBeDamaged = false;
+	SetCanBeDamaged (false);
 	Health--;
 	if (Health > 0)
 	{
@@ -118,15 +130,17 @@ float APlayerPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, AC
 	}
 	else
 	{
-		//Controller->PauseGame();
-		//Controller->HUD->EndGame();
+		if (Controller != NULL) {
+			Controller->PauseGame();
+			Controller->HUD->EndGame();
+		}
 	}
 	return Damage;
 }
 
 void APlayerPawn::AfterDeath()
 {
-	bCanBeDamaged = true;
+	SetCanBeDamaged(true);
 	for (TActorIterator<AUFOHard> ActorItr(Level); ActorItr; ++ActorItr)
 	{
 		ActorItr->ChaseEnemy(this);
@@ -148,8 +162,8 @@ void APlayerPawn::FireShot()
 {
 	if (CanFire&&IsShooting)
 	{
-		Level->SpawnActor<APlayerProjectile>(GetActorLocation() + GetActorRotation().RotateVector(GunOffset), GetActorRotation());
-		UGameplayStatics::PlaySoundAtLocation(Level, ShootSound, GetActorLocation());
+		Level->SpawnActor<APlayerProjectile>(ProjectileClass,GetActorLocation() + GetActorRotation().RotateVector(GunOffset), GetActorRotation());
+		UGameplayStatics::PlaySoundAtLocation(Level, ShootSound, GetActorLocation() + GetActorRotation().RotateVector(GunOffset));
 		CanFire = false;
 		Level->GetTimerManager().SetTimer(ShootHandle, this, &APlayerPawn::AfterShoot,ShootRate, false);
 	}
@@ -160,6 +174,7 @@ void APlayerPawn::FireShot()
 void APlayerPawn::Beaming(float Tick)
 {
 	TimeToBeam -= Tick;
+	Beam->SetBeamTargetPoint(0, GetActorLocation() + GetActorForwardVector() * 4000.f, 0);
 	if (TimeToBeam <= 0.f)
 	{
 		TArray<FHitResult> AllEnemies;
@@ -175,6 +190,8 @@ void APlayerPawn::Beaming(float Tick)
 				AllEnemies[i].Actor->TakeDamage(-1.f, FDamageEvent(), GetInstigatorController(), this);
 			}
 		}
+		TimeToBeam = MaxBeamTime;
+		IsBeaming = false;
 	}
 }
 
@@ -206,8 +223,8 @@ void APlayerPawn::StartBeaming()
 	CurrentCharges--;
 	IsBeaming = true;
 	PlayerCursor->Redraw(CurrentCharges);
+	Beam->Activate(true);
 	Beam->SetBeamTargetPoint(0, GetActorLocation() + GetActorForwardVector()*4000.f, 0);
-	Beam->Activate();
 	BeamSound->Play();
 }
 
@@ -215,5 +232,6 @@ void APlayerPawn::StartBeaming()
 
 APlayerPawn::~APlayerPawn()
 {
-	//Level->GetTimerManager().ClearAllTimersForObject(this);
+	//clearing timers in destructor isnt necessary, moreover next line isnt working at all,moreover this line isnt working only in destructor
+	//GetWorldTimerManager().ClearAllTimersForObject(this);
 }

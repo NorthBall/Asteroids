@@ -2,8 +2,8 @@
 
 #include "MyHUD.h"
 #include "Kismet/GameplayStatics.h"
-#include "MySaveGame.h"
-#include "Components/CanvasPanel.h"
+#include "MySaveGame.h"	
+#include "Components/VerticalBox.h"
 #include "MyPlayerController.h"
 #include "PlayerPawn.h"
 #include "Components/Button.h"
@@ -11,6 +11,7 @@
 #include "MainMenuC.h"
 #include "Components/TextBlock.h"
 #include "Engine/World.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 void UMyHUD::EndGame()
 {
@@ -31,7 +32,8 @@ void UMyHUD::Resume()
 FText UMyHUD::ChangeHealth()
 {
 	if (ModelRef == NULL) 	return FText().FromString(TEXT("ERROR"));
-	FString InterS(TEXT("Health: "));
+	static FString InterS;
+	InterS = TEXT("Health: ");
 	InterS.AppendInt(ModelRef->Health);
 	if (ColorsHealth.IsValidIndex(ModelRef->Health)) Health->SetColorAndOpacity(ColorsHealth[ModelRef->Health]);
 	return FText().FromString(InterS); //FString(TEXT("Health: ")).AppendInt(ModelRef->Health));
@@ -41,7 +43,7 @@ void UMyHUD::ToMainMenu()
 {
 	HSLineNumber=ModelRef->SaveGame();
 	ResumeB->SetIsEnabled(true);
-	ResumeB->RemoveFromParent();
+	RemoveFromParent();
 	if (!MenuRef->IsValidLowLevel()) MenuRef = CreateWidget<UMainMenuC>(this, MenuClass);
 	MenuRef->AddToViewport();
 	MenuRef->HSLineNumber = HSLineNumber;
@@ -50,8 +52,22 @@ void UMyHUD::ToMainMenu()
 }
 void UMyHUD::Quit()
 {
-	if (GetWorld()!=NULL)	GetWorld()->Exec(GetWorld(), TEXT("quit"));
+	APlayerController* Controller;
+	Controller = ModelRef->GetController<APlayerController>();
+	if (Controller != NULL)
+	{
+		Controller->ConsoleCommand(FString("quit"));
+	}
+	/*bool newvar;
+	TCHAR* a(L"Navigation");
+	if (GetWorld() != NULL) {
+		newvar = GetWorld()->Exec(GetWorld(), a, *GLog);
+		if (newvar) UE_LOG(LogTemp, Warning, TEXT("Successfully executed"));
+		//UKismetSystemLibrary::ExecuteConsoleCommand(GetWorld(), FString("quit"));
+	}*/
+	
 }
+
 FText UMyHUD::YourScore()
 {
 	return FText().FromString(FString(TEXT("Score: "))+FString().FromInt(ModelRef->Score));

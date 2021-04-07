@@ -13,6 +13,7 @@
 void UMainMenuC::Reload()
 {
 	UMySaveGame* InterSave;
+	HideHighscore();
 	InterSave = Cast<UMySaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("HighScore"), 0));
 	if (InterSave == NULL) return;
 	ScoreTable->ClearChildren();

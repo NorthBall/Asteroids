@@ -15,8 +15,6 @@ AUFOHard::AUFOHard()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
 	Shield = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Shield"));
-	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AUFOHard::OnBeginOverlap);
-	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AUFOHard::OnEndOverlap);
 	for (int32 i = 0; i < 6; i++)
 	{
 		BeamEmitters.Add(CreateDefaultSubobject<UParticleSystemComponent>(FName(TEXT("Emitter"), i)));
@@ -30,8 +28,10 @@ AUFOHard::AUFOHard()
 void AUFOHard::BeginPlay()
 {
 	Super::BeginPlay();
-	bCanBeDamaged = true;
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic,ECollisionResponse::ECR_Overlap);
+	SetCanBeDamaged (true);
+	/*GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic,ECollisionResponse::ECR_Overlap);
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AUFOHard::OnBeginOverlap);
+	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AUFOHard::OnEndOverlap);*/
 }
 
 void AUFOHard::ChaseEnemy(APlayerPawn * Victim)
@@ -39,7 +39,8 @@ void AUFOHard::ChaseEnemy(APlayerPawn * Victim)
 	Enemy = Victim;
 	if (Enemy != NULL)
 	{
-		if (Cast<AAIController>(GetController()) != NULL) Cast<AAIController>(GetController())->MoveToActor(Enemy);
+		TrueController = Cast<AAIController>(GetController());
+		if ( TrueController!= NULL) TrueController->MoveToActor(Enemy);
 	}
 }
 
@@ -50,7 +51,7 @@ void AUFOHard::PowerOff(AActor* IgnoredActor)
 	if (IgnoredActor!=NULL) OverlappedActors.Remove(IgnoredActor);
 	if (OverlappedActors.Num() == 0)
 	{
-		bCanBeDamaged = true;
+		SetCanBeDamaged (true);
 		ShieldOn = false;
 		Shield->SetVisibility(false);
 		for (UParticleSystemComponent* Emit : BeamEmitters)
@@ -62,7 +63,7 @@ void AUFOHard::PowerOff(AActor* IgnoredActor)
 
 void AUFOHard::PowerOn()
 {
-	bCanBeDamaged = false;
+	SetCanBeDamaged (false);
 	ShieldOn = true;
 	Shield->SetVisibility(true);
 	for (UParticleSystemComponent* Emit : BeamEmitters)

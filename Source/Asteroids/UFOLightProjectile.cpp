@@ -11,9 +11,7 @@ AUFOLightProjectile::AUFOLightProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh0"));
-	Sparks = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("VFX0"));
-	ProjectileMesh->OnComponentBeginOverlap.AddDynamic(this, &AUFOLightProjectile::OnBeginOverlap);
-	ProjectileMesh->OnComponentHit.AddDynamic(this, &AUFOLightProjectile::OnHit);		// set up a notification for when this component hits something
+	Sparks = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("VFX0"));		// set up a notification for when this component hits something
 	RootComponent = ProjectileMesh;
 	Sparks->SetupAttachment(RootComponent);
 }
@@ -22,6 +20,8 @@ AUFOLightProjectile::AUFOLightProjectile()
 void AUFOLightProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+	/*ProjectileMesh->OnComponentBeginOverlap.AddDynamic(this, &AUFOLightProjectile::OnBeginOverlap);
+	ProjectileMesh->OnComponentHit.AddDynamic(this, &AUFOLightProjectile::OnHit);*/
 	
 }
 

@@ -24,18 +24,18 @@ public:
 		~AMyPlayerController();
 		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera")
 		ACameraActor* MainCamera;
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InitClass")
+			TSubclassOf<class UCursorWidget> PlayerCursorClass;
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InitClass")
+			TSubclassOf<class UUserWidget> CasualCursorClass;
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "InitClass")
+			TSubclassOf<class UMyHUD> HUDClass;
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
 			UCursorWidget* PlayerCursor;
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
-			TSubclassOf<class UCursorWidget> PlayerCursorClass;
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
 			UUserWidget* CasualCursor;
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
-			TSubclassOf<class UUserWidget> CasualCursorClass;
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
-		UMyHUD* HUD;
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
-			TSubclassOf<class UMyHUD> HUDClass;
+			UMyHUD* HUD;
 		UWorld* Level;
 		APlayerPawn* PlayerModel;
 		FHitResult Hit;

@@ -17,7 +17,7 @@ class ASTEROIDS_API APlayerProjectile : public AActor
 public:	
 	// Sets default values for this actor's properties
 	APlayerProjectile();
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Init|Meshes")
 		UStaticMeshComponent* ProjectileMesh;
 
 	/** Projectile movement component */
@@ -35,5 +35,5 @@ public:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	
-	
+	TSet<UClass*> Enemies;
 };
