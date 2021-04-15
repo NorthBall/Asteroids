@@ -61,6 +61,7 @@ void AMyPlayerController::BeginPlay()
 			PlayerModel->Controller = this;
 			PlayerModel->PlayerCursor = PlayerCursor;
 			HUD->ModelRef = PlayerModel;
+			PlayerCursor->Redraw(PlayerModel->GetCharges());
 		}
 		bShowMouseCursor = true;
 	}

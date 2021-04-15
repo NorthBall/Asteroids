@@ -28,11 +28,11 @@ AMyAsteroid::AMyAsteroid()
 void AMyAsteroid::BeginPlay()
 {
 	Super::BeginPlay();
-	/*if (MainCollision != NULL)
+	if (MainCollision != NULL)
 	{
 		MainCollision->OnComponentBeginOverlap.AddDynamic(this, &AMyAsteroid::OnBeginOverlap); //for gameplay interactions
 		MainCollision->OnComponentHit.AddDynamic(this, &AMyAsteroid::OnHit);
-	}*/
+	}
 	World = GetWorld();
 }
 

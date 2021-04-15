@@ -7,6 +7,7 @@
 #include "CursorWidget.generated.h"
 
 class UImage;
+class APlayerPawn;
 /**
  * 
  */
@@ -16,14 +17,14 @@ class ASTEROIDS_API UCursorWidget : public UUserWidget
 	GENERATED_BODY()
 public:
 	UCursorWidget(const FObjectInitializer& ObjectInitializer);
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 		TArray<UImage*> Images;
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-			FLinearColor Green;
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
-			FLinearColor Red;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+		FLinearColor Green;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+		FLinearColor Red;
 	UFUNCTION()
 		void Redraw(int32 Charges);
-	
-	
+	//suport
+	int32 i;
 };

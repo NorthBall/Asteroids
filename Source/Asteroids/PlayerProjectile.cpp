@@ -15,7 +15,7 @@ APlayerProjectile::APlayerProjectile()
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMesh0"));
 	// set up a notification for when this component hits something
 	RootComponent = ProjectileMesh;
-	Enemies = { AUFOHard::StaticClass(),AMyAsteroid::StaticClass(),AUFOLight::StaticClass() };
+	//Enemies = { AUFOHard::StaticClass(),AMyAsteroid::StaticClass(),AUFOLight::StaticClass() };
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement0"));
 	ProjectileMovement->UpdatedComponent = RootComponent;
 	ProjectileMovement->InitialSpeed = 3000.f;
@@ -42,8 +42,9 @@ void APlayerProjectile::OnBeginOverlap(UPrimitiveComponent * OverlappedComp, AAc
 	{
 		if (Enemies.Contains(OtherActor->GetClass()))
 		{
-			OtherActor->TakeDamage(1, FDamageEvent(), MainActor->GetInstigatorController(), this);
 			Destroy();
+			OtherActor->TakeDamage(1, FDamageEvent(), MainActor->GetInstigatorController(), this);
+			
 		}
 		/*HitActor = Cast<AUFOHard>(OtherActor);
 		if (HitActor == NULL) HitActor = Cast<AUFOLight>(OtherActor);

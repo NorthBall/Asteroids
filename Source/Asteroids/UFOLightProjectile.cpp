@@ -20,8 +20,8 @@ AUFOLightProjectile::AUFOLightProjectile()
 void AUFOLightProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	/*ProjectileMesh->OnComponentBeginOverlap.AddDynamic(this, &AUFOLightProjectile::OnBeginOverlap);
-	ProjectileMesh->OnComponentHit.AddDynamic(this, &AUFOLightProjectile::OnHit);*/
+	ProjectileMesh->OnComponentBeginOverlap.AddDynamic(this, &AUFOLightProjectile::OnBeginOverlap);
+	ProjectileMesh->OnComponentHit.AddDynamic(this, &AUFOLightProjectile::OnHit);
 	
 }
 

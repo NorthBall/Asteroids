@@ -20,7 +20,7 @@ void AUFOLight::BeginPlay()
 {
 	Super::BeginPlay();
 	Level = GetWorld();
-	//GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AUFOLight::OnBeginOverlap);
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AUFOLight::OnBeginOverlap);
 }
 
 float AUFOLight::TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)

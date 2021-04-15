@@ -21,6 +21,9 @@ void ALevelMain::BeginPlay()
 	if (TActorIterator<APlayerPawn>(GetWorld()))
 	{
 		MainPlayer = *TActorIterator<APlayerPawn>(GetWorld());
+		MainPlayer->BeamEnemies.Add(AsteroidClass);
+		MainPlayer->BeamEnemies.Add(HardUFOClass);
+		MainPlayer->BeamEnemies.Add(LightUFOClass);
 	}
 	AMyPlayerController* PlContr = GetWorld()->GetFirstPlayerController<AMyPlayerController>();
 	if (PlContr != NULL)
@@ -89,17 +92,25 @@ void ALevelMain::SpawnEnemy(EEnemyTypes EnemyType)
 	{
 	case EEnemyTypes::Asteroid:
 		CurentAsteroid = GetWorld()->SpawnActor<AMyAsteroid>(AsteroidClass, FTransform(SpawnRotation, SpawnPoint, SpawnScale));
-		CurentAsteroid->Enemy = MainPlayer;
-		CurentAsteroid->ProjectileMovement->Velocity = FRotator(0,  FMath::RandRange(float(0), float(360)),0 ).Vector() * FMath::RandRange(35, 100);
-		CurentAsteroid->Health = FMath::RandRange(1, Level);
+		if (CurentAsteroid != NULL)
+		{
+			CurentAsteroid->Enemy = MainPlayer;
+			CurentAsteroid->ProjectileMovement->Velocity = FRotator(0, FMath::RandRange(float(0), float(360)), 0).Vector() * FMath::RandRange(35, 100);
+			CurentAsteroid->Health = FMath::RandRange(1, Level);
+			if (CurentAsteroid->Health > 1)
+			{
+				//CurentAsteroid->AddActorWorldOffset(FVector(0, 0, 200));
+				CurentAsteroid->SetActorScale3D(SpawnScale *pow(1.4, CurentAsteroid->Health - 1));
+			}
+		}
 		break;
 	case EEnemyTypes::UFOHard:
-		CurentHard = GetWorld()->SpawnActor<AUFOHard>(HardUFOClass, FTransform(SpawnRotation, SpawnPoint, SpawnScale));
-		CurentHard->Enemy = MainPlayer;
+		/*CurentHard = GetWorld()->SpawnActor<AUFOHard>(HardUFOClass, FTransform(SpawnRotation, SpawnPoint, SpawnScale));
+		CurentHard->Enemy = MainPlayer;*/
 		break;
 	case EEnemyTypes::UFOLight:
-		CurentLight = GetWorld()->SpawnActor<AUFOLight>(LightUFOClass, FTransform(SpawnRotation, SpawnPoint, SpawnScale));
-		CurentLight->Enemy = MainPlayer;
+		/*CurentLight = GetWorld()->SpawnActor<AUFOLight>(LightUFOClass, FTransform(SpawnRotation, SpawnPoint, SpawnScale));
+		CurentLight->Enemy = MainPlayer;*/
 		break;
 	}
 }

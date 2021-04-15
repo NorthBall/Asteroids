@@ -39,6 +39,7 @@ APlayerPawn::APlayerPawn()
 	if (MainTheme->IsValidLowLevelFast())
 	{
 		MainTheme->bAutoActivate = false;
+		MainTheme->bIsUISound = true;
 	}
 	FailSound = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioFail"));
 	if (FailSound->IsValidLowLevelFast())
@@ -51,13 +52,12 @@ APlayerPawn::APlayerPawn()
 		BeamSound->bAutoActivate = false;
 	}
 	MainCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("VFX0"));
-	//ProjectileMesh->OnComponentBeginOverlap.AddDynamic(this, &AMyAsteroid::OnBeginOverlap);
-	//ProjectileMesh->OnComponentHit.AddDynamic(this, &AMyAsteroid::OnHit);		// set up a notification for when this component hits something
+	
 	RootComponent = MainCollision;
 	Body->SetupAttachment(RootComponent);
 	Beam->SetupAttachment(Body);
 	Beam->SetVisibility(false);
-	BeamEnemies={ AUFOHard::StaticClass(),AMyAsteroid::StaticClass(),AUFOLight::StaticClass() };
+	//BeamEnemies={ AUFOHard::StaticClass(),AMyAsteroid::StaticClass(),AUFOLight::StaticClass() };
 	SweepHit = &TempHit;//Very important, ue4 pointers wouldnt work without right part
 }
 
@@ -67,11 +67,12 @@ void APlayerPawn::BeginPlay()
 	Super::BeginPlay();
 	Beam->Deactivate();
 	Beam->SetVisibility(true);
-	if (MainTheme != NULL)
+	if (MainTheme->IsValidLowLevelFast())
 	{
-		MainTheme->Play();
-		//MainTheme->OnAudioFinished.AddDynamic(this, &APlayerPawn::ReplaySound);
+		MainTheme->OnAudioFinished.AddDynamic(this, &APlayerPawn::ReplayMainTheme);
+		MainTheme->Play();		
 	}
+	ChangeCharges(MaxCharges);
 }
 
 // Called every frame
@@ -89,8 +90,9 @@ void APlayerPawn::Tick(float DeltaTime)
 		{
 			DeltaSpeed.GetClampedToMaxSize(1.f);
 			SpeedVect = (SpeedVect + GetActorRotation().RotateVector(DeltaSpeed*Acceleration*DeltaTime)).GetClampedToMaxSize(MaxSpeed);
-			FireShot();
+			
 		}
+		FireShot();
 	}
 	AddActorWorldOffset(SpeedVect*DeltaTime,true,SweepHit);
 	//DebugHelper(SpeedVect * DeltaTime);
@@ -100,14 +102,13 @@ void APlayerPawn::Tick(float DeltaTime)
 		SpeedVect=FVector::VectorPlaneProject(SpeedVect, SweepHit->Normal.GetSafeNormal2D());
 		AddActorWorldOffset(SpeedVect*(1.f - SweepHit->Time)*DeltaTime,true,SweepHit);
 	}
-	if (MaxCharges != CurrentCharges)
+	if (MaxCharges != GetCharges())
 	{
 		reChargeTime -= DeltaTime;
 		if (reChargeTime <= 0.f)
 		{
 			reChargeTime = MaxChargeTime;
-			CurrentCharges++;
-			PlayerCursor->Redraw(CurrentCharges);
+			ChangeCharges(1);
 		}
 	}
 }
@@ -120,8 +121,7 @@ float APlayerPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, AC
 	if (Health > 0)
 	{
 		SetActorLocation(FVector(0.f, 0.f, 230.f));
-		CurrentCharges = MaxCharges;
-		if (PlayerCursor != NULL) PlayerCursor->Redraw(CurrentCharges);
+		ChangeCharges(MaxCharges);
 		IsBeaming = false;
 		Beam->Deactivate();
 		reChargeTime = MaxChargeTime;
@@ -153,19 +153,21 @@ void APlayerPawn::AfterShoot()
 	CanFire = true;
 }
 
-void APlayerPawn::ReplaySound()
+void APlayerPawn::ReplayMainTheme()
 {
-	if (MainTheme!=NULL)	MainTheme->Play();
+	if (MainTheme->IsValidLowLevel())	MainTheme->Play();
 }
 
 void APlayerPawn::FireShot()
 {
 	if (CanFire&&IsShooting)
 	{
-		Level->SpawnActor<APlayerProjectile>(ProjectileClass,GetActorLocation() + GetActorRotation().RotateVector(GunOffset), GetActorRotation());
+		LastProjectile = Level->SpawnActor<APlayerProjectile>(ProjectileClass, GetActorLocation() + GetActorRotation().RotateVector(GunOffset), GetActorRotation());
+		LastProjectile->MainActor = this;
+		LastProjectile->Enemies = BeamEnemies;
 		UGameplayStatics::PlaySoundAtLocation(Level, ShootSound, GetActorLocation() + GetActorRotation().RotateVector(GunOffset));
 		CanFire = false;
-		Level->GetTimerManager().SetTimer(ShootHandle, this, &APlayerPawn::AfterShoot,ShootRate, false);
+		Level->GetTimerManager().SetTimer(ShootHandle, this, &APlayerPawn::AfterShoot,FireRate, false);
 	}
 
 }
@@ -185,7 +187,7 @@ void APlayerPawn::Beaming(float Tick)
 		Level->SweepMultiByObjectType(AllEnemies, GetActorLocation(), GetActorForwardVector()*4000.f + GetActorLocation(), FQuat(EForceInit::ForceInitToZero), Objects, FCollisionShape::MakeBox(FVector(14.f)));
 		for (int32 i = 0; i < AllEnemies.Num(); i++)
 		{
-			if (BeamEnemies.Contains(AllEnemies[i].Actor->GetClass()))
+			if(AllEnemies[i].Actor->IsValidLowLevel()) if (BeamEnemies.Contains(AllEnemies[i].Actor->GetClass()))
 			{
 				AllEnemies[i].Actor->TakeDamage(-1.f, FDamageEvent(), GetInstigatorController(), this);
 			}
@@ -215,14 +217,13 @@ int32 APlayerPawn::SaveGame()
 void APlayerPawn::StartBeaming()
 {
 	if (IsBeaming) return;
-	if ( CurrentCharges < 1)
+	if ( GetCharges() < 1)
 	{
 		FailSound->Play();
 		return;
 	}
-	CurrentCharges--;
+	ChangeCharges(-1);
 	IsBeaming = true;
-	PlayerCursor->Redraw(CurrentCharges);
 	Beam->Activate(true);
 	Beam->SetBeamTargetPoint(0, GetActorLocation() + GetActorForwardVector()*4000.f, 0);
 	BeamSound->Play();
@@ -234,4 +235,25 @@ APlayerPawn::~APlayerPawn()
 {
 	//clearing timers in destructor isnt necessary, moreover next line isnt working at all,moreover this line isnt working only in destructor
 	//GetWorldTimerManager().ClearAllTimersForObject(this);
+}
+
+int32 APlayerPawn::ChangeCharges(int32 Delta)
+{
+	if (CurrentCharges + Delta <= MaxCharges)
+	{
+		if (CurrentCharges + Delta >= 0)
+		{
+			CurrentCharges += Delta;
+		}
+		else
+			CurrentCharges = 0;
+	}
+	else
+		CurrentCharges = MaxCharges;
+	if (PlayerCursor!=NULL) PlayerCursor->Redraw(CurrentCharges);
+	return CurrentCharges;
+}
+int32 APlayerPawn::GetCharges()
+{
+	return CurrentCharges;
 }

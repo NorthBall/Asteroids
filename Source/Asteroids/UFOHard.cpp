@@ -29,9 +29,9 @@ void AUFOHard::BeginPlay()
 {
 	Super::BeginPlay();
 	SetCanBeDamaged (true);
-	/*GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic,ECollisionResponse::ECR_Overlap);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic,ECollisionResponse::ECR_Overlap);
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AUFOHard::OnBeginOverlap);
-	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AUFOHard::OnEndOverlap);*/
+	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AUFOHard::OnEndOverlap);
 }
 
 void AUFOHard::ChaseEnemy(APlayerPawn * Victim)

@@ -22,7 +22,10 @@ UCLASS()
 class ASTEROIDS_API APlayerPawn : public APawn
 {
 	GENERATED_BODY()
+private:
 
+	UPROPERTY(VisibleAnywhere,  Category = "Beam")
+		int32 CurrentCharges;
 public:
 	// Components
 	APlayerPawn();
@@ -52,8 +55,10 @@ public:
 		int32 Score;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Data")
 		int32 Health=3;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Beam")
-		int32 CurrentCharges;
+	UFUNCTION(BlueprintCallable)
+		int32 GetCharges();
+	UFUNCTION(BlueprintCallable)
+		int32 ChangeCharges(int32 Delta);///return charges after change
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beam")
 		int32 MaxCharges=3;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Beam")
@@ -77,7 +82,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Shot")
 		bool CanFire=true;
 	FTimerHandle ShootHandle;
-	float ShootRate;
 	UWorld* Level;
 	//states and etc.
 	bool IsShooting=false;
@@ -101,7 +105,7 @@ public:
 	UFUNCTION()
 		void AfterShoot();
 	UFUNCTION()
-		void ReplaySound();
+		void ReplayMainTheme();
 	//somefunctions
 	void FireShot();
 	void Beaming(float Tick);
@@ -115,5 +119,6 @@ public:
 	TSet<UClass*> BeamEnemies;
 	UFUNCTION(BlueprintImplementableEvent)
 		FHitResult DebugHelper(FVector Offset);
+	APlayerProjectile* LastProjectile;
 
 };
