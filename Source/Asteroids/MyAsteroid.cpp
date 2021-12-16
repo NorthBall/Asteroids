@@ -56,7 +56,7 @@ float AMyAsteroid::TakeDamage(float Damage, struct FDamageEvent const& DamageEve
 	if (Damage > 0)
 	{
 		//damage-driven weapon
-		Enemy->Score += pow(2, (Damage<Health)?Damage : Health);
+		Enemy->Score += pow(2, (Damage<Health)?Damage-1 : Health-1);
 		Health -= Damage;
 		if (Health <= 0)
 		{
@@ -80,7 +80,7 @@ float AMyAsteroid::TakeDamage(float Damage, struct FDamageEvent const& DamageEve
 void AMyAsteroid::Double(int32 TimesToRepeat )
 {
 	//function to crush asteroid to 2 small parts
-	ProjectileMovement->Velocity = FRotator(0, 0, FMath::RandRange(0.f, 360.f)).RotateVector(ProjectileMovement->Velocity*1.5);
+	ProjectileMovement->Velocity = FRotator(0, FMath::RandRange(0.f, 360.f), 0).RotateVector(ProjectileMovement->Velocity * 1.5);
 	SetActorScale3D(GetActorScale3D()*pow(0.7,TimesToRepeat));
 	if (World != NULL)
 	{
@@ -89,7 +89,7 @@ void AMyAsteroid::Double(int32 TimesToRepeat )
 		{
 			Twin = World->SpawnActor<AMyAsteroid>(GetClass(), GetActorLocation(), FRotator::ZeroRotator);
 			Twin->Enemy = Enemy;
-			Twin->ProjectileMovement->Velocity = FRotator(0, 0, FMath::RandRange(0.f, 360.f)).RotateVector(ProjectileMovement->Velocity);
+			Twin->ProjectileMovement->Velocity = FRotator(0, FMath::RandRange(0.f, 360.f), 0).RotateVector(ProjectileMovement->Velocity);
 			Twin->SetActorScale3D(GetActorScale3D());//set twin scale equal to first asteroid scale
 			Twin->Health = Health;
 		}
