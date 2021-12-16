@@ -10,6 +10,7 @@
 #include "UFOLight.h"
 #include "Math/UnrealMathUtility.h"
 #include "LevelTableRow.h"
+#include "Components/SphereComponent.h"
 
 ALevelMain::ALevelMain()
 {
@@ -95,6 +96,7 @@ void ALevelMain::SpawnEnemy(EEnemyTypes EnemyType)
 		if (CurentAsteroid != NULL)
 		{
 			CurentAsteroid->Enemy = MainPlayer;
+			//CurentAsteroid->MainCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1,ECollisionResponse::ECR_Overlap);
 			CurentAsteroid->ProjectileMovement->Velocity = FRotator(0, FMath::RandRange(float(0), float(360)), 0).Vector() * FMath::RandRange(35, 100);
 			CurentAsteroid->Health = FMath::RandRange(1, Level);
 			if (CurentAsteroid->Health > 1)

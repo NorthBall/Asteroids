@@ -86,12 +86,23 @@ void APlayerPawn::Tick(float DeltaTime)
 	else
 	{
 		SetActorRotation(FRotator(0, (MouseLoc - GetActorLocation()).Rotation().Yaw,0));
-		if (DeltaSpeed.Size() > 0)
+		if (Stabilising)
 		{
-			DeltaSpeed.GetClampedToMaxSize(1.f);
-			SpeedVect = (SpeedVect + GetActorRotation().RotateVector(DeltaSpeed*Acceleration*DeltaTime)).GetClampedToMaxSize(MaxSpeed);
+			DeltaSpeed = -SpeedVect;
+			DeltaSpeed=DeltaSpeed.GetClampedToMaxSize(1.f);
+			if ((DeltaSpeed * Acceleration * DeltaTime).Size() > SpeedVect.Size())
+			{
+				SpeedVect = FVector(0, 0, 0);
+			}
+			else SpeedVect = (SpeedVect + (DeltaSpeed * Acceleration * DeltaTime)).GetClampedToMaxSize(MaxSpeed);
+		} else
+			if (DeltaSpeed.Size() > 0)
+			{
+				//UE_LOG(LogTemp, Warning, TEXT("%f LevelTime"), DeltaSpeed.Size());
+				DeltaSpeed=DeltaSpeed.GetClampedToMaxSize(1.f);
+				SpeedVect = (SpeedVect + GetActorRotation().RotateVector(DeltaSpeed*Acceleration*DeltaTime)).GetClampedToMaxSize(MaxSpeed);
 			
-		}
+			}
 		FireShot();
 	}
 	AddActorWorldOffset(SpeedVect*DeltaTime,true,SweepHit);

@@ -50,4 +50,6 @@ public:
 	void StartBeaming();
 	void EndShooting();
 	void PauseGame();
+	void Stabilise();
+	void CancelStabilise();
 };

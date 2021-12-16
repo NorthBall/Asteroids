@@ -70,7 +70,7 @@ void AMyPlayerController::BeginPlay()
 void AMyPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	GetHitResultUnderCursor(ECollisionChannel::ECC_WorldStatic, false, Hit);
+	GetHitResultUnderCursor(ECollisionChannel::ECC_WorldStatic, true, Hit);
 	if (PlayerModel!=NULL)	PlayerModel->MouseLoc=Hit.Location;
 }
 void AMyPlayerController::SetupInputComponent()
@@ -82,6 +82,9 @@ void AMyPlayerController::SetupInputComponent()
 	InputComponent->BindAction("RightClick", IE_Pressed, this, &AMyPlayerController::StartBeaming);
 	InputComponent->BindAxis("MoveRight", this, &AMyPlayerController::AxisY);
 	InputComponent->BindAxis("MoveForward", this, &AMyPlayerController::AxisX);
+	InputComponent->BindAction("Stabilise",IE_Pressed, this, &AMyPlayerController::Stabilise);
+	InputComponent->BindAction("Stabilise", IE_Released, this, &AMyPlayerController::CancelStabilise);
+	
 }
 void AMyPlayerController::StartShooting()
 {
@@ -108,4 +111,12 @@ void AMyPlayerController::PauseGame()
 AMyPlayerController::~AMyPlayerController()
 {
 	if (MainCamera->IsValidLowLevel()) MainCamera->Destroy();
+}
+void AMyPlayerController::Stabilise()
+{
+	PlayerModel->Stabilising = true;
+}
+void AMyPlayerController::CancelStabilise()
+{
+	PlayerModel->Stabilising = false;
 }

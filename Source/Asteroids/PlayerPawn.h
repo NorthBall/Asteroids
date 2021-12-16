@@ -86,6 +86,7 @@ public:
 	//states and etc.
 	bool IsShooting=false;
 	bool IsBeaming=false;
+	bool Stabilising = false;
 	FVector MouseLoc;
 	UCursorWidget* PlayerCursor;
 	FTimerHandle DeathHandle;
