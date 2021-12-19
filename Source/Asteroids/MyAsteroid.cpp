@@ -31,7 +31,7 @@ void AMyAsteroid::BeginPlay()
 	if (MainCollision != NULL)
 	{
 		MainCollision->OnComponentBeginOverlap.AddDynamic(this, &AMyAsteroid::OnBeginOverlap); //for gameplay interactions
-		MainCollision->OnComponentHit.AddDynamic(this, &AMyAsteroid::OnHit);
+		/*MainCollision->OnComponentHit.AddDynamic(this, &AMyAsteroid::OnHit);*/
 	}
 	World = GetWorld();
 }
@@ -45,12 +45,12 @@ void AMyAsteroid::OnBeginOverlap(UPrimitiveComponent * OverlappedComp, AActor * 
 		Destroy();
 	}
 }
-
+/*
 void AMyAsteroid::OnHit(UPrimitiveComponent * HitComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, FVector NormalImpulse, const FHitResult & Hit)
 {
 	Destroy();
 }
-
+*/
 float AMyAsteroid::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser)
 {
 	if (Damage > 0)

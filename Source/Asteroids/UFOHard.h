@@ -20,7 +20,7 @@ class ASTEROIDS_API AUFOHard : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AUFOHard();
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Meshes")
 		UStaticMeshComponent* Body;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
 		UStaticMeshComponent* Shield;
@@ -42,6 +42,9 @@ public:
 		void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 		void OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	UFUNCTION(BlueprintImplementableEvent)
+		void SpareMoveTo(APlayerPawn* Victim);
+	void OnEndMove(struct FAIRequestID RequestID, const struct FPathFollowingResult& Result);
 	//some support variable
 	AAIController* TrueController;//Controller of Pawn with right class
 };

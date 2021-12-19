@@ -127,6 +127,7 @@ void APlayerPawn::Tick(float DeltaTime)
 
 float APlayerPawn::TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
 {
+	if (!CanBeDamaged()) return 0;
 	SetCanBeDamaged (false);
 	Health--;
 	if (Health > 0)

@@ -44,14 +44,16 @@ void ALevelMain::BeginPlay()
 
 void ALevelMain::Tick(float DeltaTime)
 {
+	static int tickRand;
 	Super::Tick(DeltaTime);
 	AsteroidCurrentTime += DeltaTime;
 	if (AsteroidCurrentTime >= AsteroidSpawnTime)
 	{
-		SpawnEnemy(EEnemyTypes::Asteroid);
-		AsteroidCurrentTime -= AsteroidSpawnTime;
+		tickRand = FMath::RandRange(1, Level);
+		SpawnEnemy(EEnemyTypes::Asteroid,tickRand);
+		AsteroidCurrentTime -= AsteroidSpawnTime/pow(2,Level-tickRand);
 	}
-	if (Level > 1)
+	if (Level >= 1)
 	{
 		HardUFOCurrentTime += DeltaTime;
 		if (HardUFOCurrentTime >= HardUFOSpawnTime)
@@ -79,7 +81,7 @@ void ALevelMain::Tick(float DeltaTime)
 
 
 
-void ALevelMain::SpawnEnemy(EEnemyTypes EnemyType)
+void ALevelMain::SpawnEnemy(EEnemyTypes EnemyType, int difficulty)
 {
 	static FVector SpawnPoint;
 	static FRotator SpawnRotation;
@@ -97,8 +99,8 @@ void ALevelMain::SpawnEnemy(EEnemyTypes EnemyType)
 		{
 			CurentAsteroid->Enemy = MainPlayer;
 			//CurentAsteroid->MainCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1,ECollisionResponse::ECR_Overlap);
-			CurentAsteroid->ProjectileMovement->Velocity = FRotator(0, FMath::RandRange(float(0), float(360)), 0).Vector() * FMath::RandRange(35, 100);
-			CurentAsteroid->Health = FMath::RandRange(1, Level);
+			CurentAsteroid->ProjectileMovement->Velocity = FRotator(0, FMath::RandRange(-30,30), 0).RotateVector((Center-CurentAsteroid->GetActorLocation()).GetSafeNormal2D()) * FMath::RandRange(50, 150)*pow(speedMultiplier,Level-difficulty);
+			CurentAsteroid->Health = difficulty;
 			if (CurentAsteroid->Health > 1)
 			{
 				//CurentAsteroid->AddActorWorldOffset(FVector(0, 0, 200));
@@ -107,8 +109,8 @@ void ALevelMain::SpawnEnemy(EEnemyTypes EnemyType)
 		}
 		break;
 	case EEnemyTypes::UFOHard:
-		/*CurentHard = GetWorld()->SpawnActor<AUFOHard>(HardUFOClass, FTransform(SpawnRotation, SpawnPoint, SpawnScale));
-		CurentHard->Enemy = MainPlayer;*/
+		CurentHard = GetWorld()->SpawnActor<AUFOHard>(HardUFOClass, FTransform(SpawnRotation, SpawnPoint, SpawnScale));
+		CurentHard->ChaseEnemy(MainPlayer);
 		break;
 	case EEnemyTypes::UFOLight:
 		/*CurentLight = GetWorld()->SpawnActor<AUFOLight>(LightUFOClass, FTransform(SpawnRotation, SpawnPoint, SpawnScale));

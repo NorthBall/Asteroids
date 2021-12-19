@@ -41,11 +41,11 @@ public:
 
 
 	virtual void Tick(float DeltaTime) override;
-	void SpawnEnemy(EEnemyTypes EnemyType);
+	void SpawnEnemy(EEnemyTypes EnemyType, int difficulty=1);
 	void LevelUp();
 	/* support variables*/
 	float AsteroidCurrentTime=0;
-	float AsteroidSpawnTime = 1.0;
+	float AsteroidSpawnTime = 0.8;
 	float HardUFOCurrentTime = 0;
 	float HardUFOSpawnTime = 1.2;
 	float LightUFOCurrentTime = 0;
@@ -53,7 +53,7 @@ public:
 	float LevelCurrentTime = 0;
 	float LevelUpdateTime;
 	int32 Level = 1;
-	//utility variables
-
-	
+	//constant
+	const float speedMultiplier = 1.5;
+	const FVector Center{ 0.f,0.f,0.f };
 };

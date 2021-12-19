@@ -7,6 +7,7 @@
 #include "AIController.h"
 #include "PlayerPawn.h"
 #include "MyAsteroid.h"
+#include "Navigation/PathFollowingComponent.h"
 
 
 // Sets default values
@@ -14,13 +15,16 @@ AUFOHard::AUFOHard()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
+	Body->AttachToComponent(RootComponent,FAttachmentTransformRules(EAttachmentRule::KeepRelative,false));
 	Shield = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Shield"));
+	Shield->AttachToComponent(RootComponent, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
 	for (int32 i = 0; i < 6; i++)
 	{
 		BeamEmitters.Add(CreateDefaultSubobject<UParticleSystemComponent>(FName(TEXT("Emitter"), i)));
 		BeamEmitters[i]->SetRelativeLocation(FRotator(0, i * 60, 0).RotateVector(FVector(0, 120, 35)));
 		BeamEmitters[i]->ActivateSystem();
 		BeamEmitters[i]->SetEmitterEnable(TEXT("Main"), false);
+		BeamEmitters[i]->AttachToComponent(RootComponent, FAttachmentTransformRules(EAttachmentRule::KeepRelative, false));
 	}
 }
 
@@ -28,10 +32,13 @@ AUFOHard::AUFOHard()
 void AUFOHard::BeginPlay()
 {
 	Super::BeginPlay();
-	SetCanBeDamaged (true);
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic,ECollisionResponse::ECR_Overlap);
-	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AUFOHard::OnBeginOverlap);
-	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AUFOHard::OnEndOverlap);
+	PowerOff(NULL);
+	//Shield->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody,ECollisionResponse::ECR_Overlap);
+	Shield->OnComponentBeginOverlap.AddDynamic(this, &AUFOHard::OnBeginOverlap);
+	Shield->OnComponentEndOverlap.AddDynamic(this, &AUFOHard::OnEndOverlap);
+	
+	/*TrueController = Cast<AAIController>(GetController());
+	if (TrueController != NULL) TrueController->GetPathFollowingComponent()->OnRequestFinished.AddUObject(this, &AUFOHard::OnEndMove);*/
 }
 
 void AUFOHard::ChaseEnemy(APlayerPawn * Victim)
@@ -40,7 +47,8 @@ void AUFOHard::ChaseEnemy(APlayerPawn * Victim)
 	if (Enemy != NULL)
 	{
 		TrueController = Cast<AAIController>(GetController());
-		if ( TrueController!= NULL) TrueController->MoveToActor(Enemy);
+		SpareMoveTo(Enemy);
+		//if ( TrueController!= NULL) TrueController->MoveToActor(Enemy,0.01f,false,true,true,0,true);
 	}
 }
 
@@ -81,13 +89,13 @@ float AUFOHard::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent,
 
 void AUFOHard::OnBeginOverlap(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	if(!ShieldOn)	if (OtherActor->GetClass() == AMyAsteroid::StaticClass())
+	if(!ShieldOn)	if (Cast<AMyAsteroid>(OtherActor))
 	{
 		PowerOn();
 	}
 	else
 	{
-		if (OtherActor->GetClass() == APlayerPawn::StaticClass())
+		if (Cast<APlayerPawn>(OtherActor))
 		{
 			OtherActor->TakeDamage(1, FDamageEvent(), GetInstigatorController(), this);
 		}
@@ -101,3 +109,10 @@ void AUFOHard::OnEndOverlap(UPrimitiveComponent * OverlappedComp, AActor * Other
 		PowerOff(Cast<AMyAsteroid>(OtherActor));
 	}
 }
+
+void AUFOHard::OnEndMove(FAIRequestID RequestID,const FPathFollowingResult& Result)
+{
+	//UE_LOG(LogTemp, Warning, TEXT("%f Distance"), LevelUpdateTime);
+}
+
+
