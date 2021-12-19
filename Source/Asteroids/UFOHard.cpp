@@ -34,8 +34,8 @@ void AUFOHard::BeginPlay()
 	Super::BeginPlay();
 	PowerOff(NULL);
 	//Shield->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody,ECollisionResponse::ECR_Overlap);
-	Shield->OnComponentBeginOverlap.AddDynamic(this, &AUFOHard::OnBeginOverlap);
-	Shield->OnComponentEndOverlap.AddDynamic(this, &AUFOHard::OnEndOverlap);
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AUFOHard::OnBeginOverlap);
+	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AUFOHard::OnEndOverlap);
 	
 	/*TrueController = Cast<AAIController>(GetController());
 	if (TrueController != NULL) TrueController->GetPathFollowingComponent()->OnRequestFinished.AddUObject(this, &AUFOHard::OnEndMove);*/
