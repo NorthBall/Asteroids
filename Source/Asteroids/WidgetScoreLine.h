@@ -16,11 +16,11 @@ class ASTEROIDS_API UWidgetScoreLine : public UUserWidget
 public:
 		void WriteText(int32 PlaceI, int32 ScoreI, FString CommentS);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UEditableText* Score;
+		class UTextBlock* Score;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UEditableText* Place;
+		UTextBlock* Place;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UEditableTextBox* Comment;
+		class UEditableTextBox*  Comment;
 
 	
 	

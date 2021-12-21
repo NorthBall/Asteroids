@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
 #include "ScoreLine.h"
+#include "PlayerPawn.h"
 #include "MySaveGame.generated.h"
 //class FScoreLine;
 /**
@@ -15,7 +16,10 @@ class ASTEROIDS_API UMySaveGame : public USaveGame
 {
 	GENERATED_BODY()
 public:
+	UMySaveGame() {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<FScoreLine> MainTable;
+		UPROPERTY(EditAnywhere,BlueprintReadWrite)
 		int32 MaxSize=20;
 	
 };

@@ -15,6 +15,7 @@ void UMainMenuC::Reload()
 	UMySaveGame* InterSave;
 	HideHighscore();
 	InterSave = Cast<UMySaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("HighScore"), 0));
+	//InterSave = Cast<UMySaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("HighScore"), 0));
 	if (InterSave == NULL) return;
 	ScoreTable->ClearChildren();
 	UWidgetScoreLine* ChildWidget;
@@ -23,9 +24,12 @@ void UMainMenuC::Reload()
 	for (auto& ScoreLine : InterSave->MainTable)
 	{
 		ChildWidget=CreateWidget<UWidgetScoreLine>(this, ScoreLineClass);
-		ChildWidget->WriteText(++i, ScoreLine.Score, ScoreLine.String);
 		ScoreTable->AddChild(ChildWidget);
-		if (HSLineNumber == i - 1) ChildWidget->Comment->SetKeyboardFocus();
+		ChildWidget->WriteText(++i, ScoreLine.Score, ScoreLine.String);
+		if (HSLineNumber == i - 1)
+		{
+			ChildWidget->Comment->SetKeyboardFocus();
+		}
 	}
 }
 

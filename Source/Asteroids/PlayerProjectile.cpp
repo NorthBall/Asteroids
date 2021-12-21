@@ -40,7 +40,7 @@ void APlayerProjectile::OnBeginOverlap(UPrimitiveComponent * OverlappedComp, AAc
 {
 	if (MainActor != NULL&&OtherActor!=NULL)
 	{
-		if (Enemies.Contains(OtherActor->GetClass()))
+		if (Enemies.Contains(OtherActor->GetClass())&&OtherActor->CanBeDamaged())
 		{
 			Destroy();
 			OtherActor->TakeDamage(1, FDamageEvent(), MainActor->GetInstigatorController(), this);

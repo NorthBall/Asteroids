@@ -11,7 +11,6 @@
 // Sets default values
 AUFOLight::AUFOLight()
 {
-	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
 	//BonesName.Add(TEXT("Bone1")); BonesName.Add(TEXT("Bone2")); BonesName.Add(TEXT("Bone3")); BonesName.Add(TEXT("Bone4")); BonesName.Add(TEXT("Bone5")); BonesName.Add(TEXT("Bone6"));
 }
 
@@ -45,20 +44,26 @@ void AUFOLight::Shoot()
 	{
 		FVector ELoc = Enemy->GetActorLocation();
 		FVector TLoc=FindBestTurret(ELoc);
-		Level->SpawnActor<AUFOLightProjectile>(AUFOLightProjectile::StaticClass(), TLoc, (ELoc - TLoc).ToOrientationRotator());
-
+		SpawnedProjectile=Level->SpawnActor<AUFOLightProjectile>(ClassOfProjectile, TLoc, (ELoc - TLoc).GetSafeNormal2D().ToOrientationRotator());
+		if (SpawnedProjectile != NULL) SpawnedProjectile->MainActor = this;
 	}
+}
+
+void AUFOLight::Init(APlayerPawn* Victim)
+{
+	Enemy = Victim;
+	InitBlackBoard();
 }
 
 FVector AUFOLight::FindBestTurret(FVector ELocation)
 {
-	FVector Result(Body->GetSocketLocation(BonesName[0]));
+	FVector Result(GetMesh()->GetSocketLocation(BonesName[0]));
 	FVector IRes(Result);
 	float IDist;
 	float Distance=FVector::Dist2D(IRes,ELocation);
 	for (int32 i = 1; i < 6; i++)
 	{
-		IRes = Body->GetSocketLocation(BonesName[i]);
+		IRes = GetMesh()->GetSocketLocation(BonesName[i]);
 		IDist = FVector::Dist2D(IRes, ELocation);
 		if (IDist < Distance)
 		{

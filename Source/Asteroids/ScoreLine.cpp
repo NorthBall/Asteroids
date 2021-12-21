@@ -13,11 +13,11 @@ bool FScoreLine::operator==(const FScoreLine & Second)
 }*/
 FScoreLine::FScoreLine()
 {
-	Score = 0;
+	Score = -9;
 	String = TEXT("");
 }
 
 bool operator<(const FScoreLine & First, const FScoreLine & Second)
 {
-	return First.Score<Second.Score;
+	return First.Score>Second.Score;
 }

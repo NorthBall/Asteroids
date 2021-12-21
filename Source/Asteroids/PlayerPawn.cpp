@@ -219,8 +219,9 @@ int32 APlayerPawn::SaveGame()
 	if (InterSave == NULL) InterSave = Cast<UMySaveGame>(UGameplayStatics::CreateSaveGameObject(UMySaveGame::StaticClass()));
 	InterSave->MainTable.Add(NewLine);
 	InterSave->MainTable.Sort();
-	InterSave->MainTable.Reset(InterSave->MaxSize);
-	UGameplayStatics::SaveGameToSlot(InterSave, TEXT("HighScore"), 0);
+	InterSave->MainTable.SetNum(InterSave->MaxSize,true);
+	bool check = UGameplayStatics::SaveGameToSlot(InterSave,TEXT("HighScore"), 0);
+	//if (check) InterSave = Cast<UMySaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("HighScore"), 0));
 	return InterSave->MainTable.FindLast(NewLine);
 	//return -1;
 

@@ -3,6 +3,7 @@
 #include "WidgetScoreLine.h"
 #include "Components/EditableTextBox.h"
 #include "Components/EditableText.h"
+#include "Components/TextBlock.h"
 
 void UWidgetScoreLine::WriteText(int32 PlaceI, int32 ScoreI, FString CommentS)
 {

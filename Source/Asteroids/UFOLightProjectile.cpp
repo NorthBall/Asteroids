@@ -14,6 +14,13 @@ AUFOLightProjectile::AUFOLightProjectile()
 	Sparks = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("VFX0"));		// set up a notification for when this component hits something
 	RootComponent = ProjectileMesh;
 	Sparks->SetupAttachment(RootComponent);
+	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement0"));
+	ProjectileMovement->UpdatedComponent = ProjectileMesh;
+	ProjectileMovement->InitialSpeed = 75.f;
+	ProjectileMovement->MaxSpeed = 75.f;
+	ProjectileMovement->bRotationFollowsVelocity = true;
+	ProjectileMovement->bShouldBounce = false;
+	ProjectileMovement->ProjectileGravityScale = 0.f;
 }
 
 // Called when the game starts or when spawned

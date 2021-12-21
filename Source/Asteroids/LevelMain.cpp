@@ -53,7 +53,7 @@ void ALevelMain::Tick(float DeltaTime)
 		SpawnEnemy(EEnemyTypes::Asteroid,tickRand);
 		AsteroidCurrentTime -= AsteroidSpawnTime/pow(2,Level-tickRand);
 	}
-	if (Level >= 1)
+	if (Level > 1)
 	{
 		HardUFOCurrentTime += DeltaTime;
 		if (HardUFOCurrentTime >= HardUFOSpawnTime)
@@ -62,7 +62,7 @@ void ALevelMain::Tick(float DeltaTime)
 			HardUFOCurrentTime -= HardUFOSpawnTime;
 		}
 	}
-	if (Level > 2)
+	if (Level > 0)
 	{
 		LightUFOCurrentTime += DeltaTime;
 		if (LightUFOCurrentTime >= LightUFOSpawnTime)
@@ -113,8 +113,8 @@ void ALevelMain::SpawnEnemy(EEnemyTypes EnemyType, int difficulty)
 		CurentHard->ChaseEnemy(MainPlayer);
 		break;
 	case EEnemyTypes::UFOLight:
-		/*CurentLight = GetWorld()->SpawnActor<AUFOLight>(LightUFOClass, FTransform(SpawnRotation, SpawnPoint, SpawnScale));
-		CurentLight->Enemy = MainPlayer;*/
+		CurentLight = GetWorld()->SpawnActor<AUFOLight>(LightUFOClass, FTransform(SpawnRotation, SpawnPoint, SpawnScale));
+		CurentLight->Init(MainPlayer);
 		break;
 	}
 }

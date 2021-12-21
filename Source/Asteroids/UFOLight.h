@@ -19,8 +19,6 @@ public:
 	// Sets default values for this character's properties
 	AUFOLight();
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
-		UStaticMeshComponent* Body;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
 		TArray<FName> BonesName = {TEXT("Bone1"),TEXT("Bone2") ,TEXT("Bone3") ,TEXT("Bone4") ,TEXT("Bone5") ,TEXT("Bone6") };
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -34,8 +32,13 @@ public:
 		void OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION(BlueprintCallable)
 		void Shoot();
+		void Init(APlayerPawn* Victim);
+	UFUNCTION(BlueprintImplementableEvent)
+		void InitBlackBoard();
 	FVector FindBestTurret(FVector ELocation);
-
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Support")
+		TSubclassOf<class AUFOLightProjectile> ClassOfProjectile;
+	//function temporal variables
+	AUFOLightProjectile* SpawnedProjectile;
 	
 };
