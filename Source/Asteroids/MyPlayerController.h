@@ -49,6 +49,7 @@ public:
 	void StartShooting();
 	void StartBeaming();
 	void EndShooting();
+	UFUNCTION(BlueprintCallable)
 	void PauseGame();
 	void Stabilise();
 	void CancelStabilise();

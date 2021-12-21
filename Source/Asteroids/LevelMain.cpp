@@ -62,7 +62,7 @@ void ALevelMain::Tick(float DeltaTime)
 			HardUFOCurrentTime -= HardUFOSpawnTime;
 		}
 	}
-	if (Level > 0)
+	if (Level > 2)
 	{
 		LightUFOCurrentTime += DeltaTime;
 		if (LightUFOCurrentTime >= LightUFOSpawnTime)

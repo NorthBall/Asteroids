@@ -13,7 +13,7 @@ bool FScoreLine::operator==(const FScoreLine & Second)
 }*/
 FScoreLine::FScoreLine()
 {
-	Score = -9;
+	Score = -1;
 	String = TEXT("");
 }
 

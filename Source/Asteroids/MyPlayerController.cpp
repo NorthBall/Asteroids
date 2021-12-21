@@ -44,7 +44,7 @@ void AMyPlayerController::BeginPlay()
 		MainCamera->GetCameraComponent()->SetOrthoWidth(4800.f);
 		MainCamera->GetCameraComponent()->SetAspectRatio(16.f / 9.f);
 		SetViewTarget(MainCamera);*/
-		if (PlayerCursorClass)
+		if (PlayerCursorClass&&!CasualCursor->IsValidLowLevel())
 		{
 			PlayerCursor = CreateWidget<UCursorWidget>(this, PlayerCursorClass);
 			SetMouseCursorWidget(EMouseCursor::Default, PlayerCursor);
@@ -101,7 +101,10 @@ void AMyPlayerController::EndShooting()
 void AMyPlayerController::PauseGame()
 {
 	SetPause(true);
-	if (HUD != NULL) if (HUD->QuickMenu != NULL) HUD->QuickMenu->SetVisibility(ESlateVisibility::Visible);
+	if (HUD != NULL)
+	{
+		if (HUD->QuickMenu != NULL) HUD->QuickMenu->SetVisibility(ESlateVisibility::Visible);
+	}
 	if (!CasualCursor->IsValidLowLevelFast() && CasualCursorClass)
 	{
 		CasualCursor = CreateWidget<UUserWidget>(this, CasualCursorClass);

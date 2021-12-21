@@ -31,7 +31,7 @@ void UMyHUD::Resume()
 }
 FText UMyHUD::ChangeHealth()
 {
-	if (ModelRef == NULL) 	return FText().FromString(TEXT("ERROR"));
+	if (ModelRef == NULL) 	return FText().FromString(TEXT("Menu"));
 	static FString InterS;
 	InterS = TEXT("Health: ");
 	InterS.AppendInt(ModelRef->Health);
@@ -70,11 +70,13 @@ void UMyHUD::Quit()
 
 FText UMyHUD::YourScore()
 {
-	return FText().FromString(FString(TEXT("Score: "))+FString().FromInt(ModelRef->Score));
+	if (ModelRef)return FText().FromString(FString(TEXT("Score: ")) + FString().FromInt(ModelRef->Score));
+	else return FText().FromString(FString("Menu"));
 }
 FText UMyHUD::HighScore()
 {
-	return FText().FromString(FString(TEXT("Highscore: ")) + FString().FromInt(SavedScore));
+	if(ModelRef)return FText().FromString(FString(TEXT("Highscore: ")) + FString().FromInt(SavedScore));
+	else return FText().FromString(FString("Menu"));
 }
 UMyHUD::UMyHUD(const FObjectInitializer& Obj):UUserWidget(Obj)
 {

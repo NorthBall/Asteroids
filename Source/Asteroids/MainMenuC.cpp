@@ -64,12 +64,16 @@ void UMainMenuC::DeleteAllScores()
 void UMainMenuC::Quit()
 {
 	UWorld* InterW=GetWorld();
-	if (InterW != NULL)	InterW->Exec(InterW, TEXT("quit"));
+	if (InterW != NULL)
+	{
+		InterW->GetFirstPlayerController()->ConsoleCommand(FString("quit"));
+		//GEngine->Exec(InterW, TEXT("quit"));
+	}
 }
 
 void UMainMenuC::StartNewGame()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("Main")));
+	UGameplayStatics::OpenLevel(GetWorld(), FName(TEXT("TwinStickExampleMap")));
 }
 
 void UMainMenuC::Options()
